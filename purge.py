@@ -1,5 +1,13 @@
-import tweepy
+import tweepy,os,sys
 
+# Checks to see if environment is properly setup, runs setup if not
+def checkEnv():
+    if (os.path.isfile('.apikey'))==False or (os.path.isfile('.ignoreIDs'))==False:
+        os.system('python ./setup.py')
+    elif os.path.isfile('tweets.csv') == False:
+        print("Could not find 'tweets.csv'")
+        print("Please download a Twitter archive and place the CSV in this directory before trying again")
+        sys.exit(0)
 # Returns information from Twitter API information file
 def getKey(apiFile):
     apiInfo = []
@@ -88,11 +96,12 @@ def purge(dumpFile):
                     # TODO ignore deleted
                     print(tweet[0],file=ignoreStore)
                     destroy(tweet[0])
-                    count+=1
+                    count+=0
                 else:
                     print("Did not delete above tweet.")
         else:
             print("API limit reached. Try again in 15 minutes.")
             break
 
+checkEnv()
 purge('tweets.csv')
