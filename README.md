@@ -6,7 +6,7 @@
   - You can request this file from the Settings page on your Twitter profile. 
     Once you download the folder, simply copy the 'tweets.csv' file into the same 
     directory as this python program to get started
-- Python 3.x and Tweepy Twitter API library
+- Python 3.x and [Tweepy Twitter API library](http://www.tweepy.org)
 
 #### Example Search:
 ```
