@@ -60,7 +60,7 @@ def search(dumpCSV):
     if os.path.isfile('deleted_tweets.csv') == False:
         with open("deleted_tweets.csv",'w') as out:
             print("ID,Date,Text",file=out)
-    out.close()
+        out.close()
     output = open("deleted_tweets.csv",'a')
     with open(dumpCSV,'r') as userTimeline:
         for line in userTimeline:
