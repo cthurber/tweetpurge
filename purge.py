@@ -57,11 +57,11 @@ def search(dumpCSV):
             searchTerms.append(term)
         else:
             done = True
-
-    with open("toDelete.csv",'w') as out:
-        print("ID,Date,Text",file=out)
+    if os.path.isfile('deleted_tweets.csv') == False:
+        with open("deleted_tweets.csv",'w') as out:
+            print("ID,Date,Text",file=out)
     out.close()
-    output = open("toDelete.csv",'a')
+    output = open("deleted_tweets.csv",'a')
     with open(dumpCSV,'r') as userTimeline:
         for line in userTimeline:
             info = line.strip('\n').split(",")
