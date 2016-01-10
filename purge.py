@@ -2,20 +2,36 @@ import tweepy,os,sys
 
 # Checks to see if environment is properly setup, runs setup if not
 def checkEnv():
-    if (os.path.isfile('.apikey'))==False or (os.path.isfile('.ignoreIDs'))==False:
-        os.system('python ./setup.py')
-    elif os.path.isfile('tweets.csv') == False:
+    if os.path.isfile('tweets.csv') == False:
         print("Could not find 'tweets.csv'")
         print("Please download a Twitter archive and place the CSV in this directory before trying again")
         sys.exit(0)
+
 # Returns information from Twitter API information file
-def getKey(apiFile):
-    apiInfo = []
-    with open(apiFile,'r') as info:
-        for line in info:
-            apiInfo.append(line.strip('\n'))
-    info.close()
-    return apiInfo # [0:consumer_key,1:consumer_secret,2:access_token,3:access_token_secret]
+def writeCredentials():
+    print("\n === Tweet Purge Setup === ")
+    password = input("Enter your twitter username: ")
+    details = [encrypt(password,input("API Key: ")),encrypt(password,input("API Secret: ")),encrypt(password,input("Token: ")),encrypt(password,input("Token Secret: "))]
+    # key = encrypt(input("API Key: "))
+    # secret = encrypt(input("API Secret: "))
+    # token = encrypt(input("Token: "))
+    # token_secret = encrypt(input("Token Secret: "))
+    with open('.apikey','wb') as apidetails:
+        for detail in details:
+            apidetails.write(detail)
+    getCredentials()
+
+def getCredentials():
+    if os.path.isfile('.apikey'):
+        password = input("Enter your twitter username: ")
+        apiArray = []
+        with open('.apikey','rb') as apidetails:
+            for line in apidetails:
+                apiArray.append(decrypt(password,apidetails.readline().decode('utf8')))
+        apidetails.close()
+        return apiArray # [0:consumer_key,1:consumer_secret,2:access_token,3:access_token_secret]
+    else:
+        writeCredentials()
 
 def getIgnores():
     ignoreArray = []
@@ -26,9 +42,9 @@ def getIgnores():
     return ignoreArray
 
 # Returns a twitter api module made from info file
-def makeAPI(keyInfoFile):
+def makeAPI():
     # Authentication details
-    apiInfoArray = getKey(keyInfoFile)
+    apiInfoArray = getCredentials()
     consumer_key = apiInfoArray[0]
     consumer_secret = apiInfoArray[1]
     access_token = apiInfoArray[2]
@@ -66,11 +82,11 @@ def search(dumpCSV):
         for line in userTimeline:
             info = line.strip('\n').split(",")
             if len(info) > 5:
-                text = info[5]
-                tweetDate = info[3].split(" ")[0].strip('"')
-                ID = info[0].strip('"')
                 for term in searchTerms:
+                    text = info[5]
                     if term in text:
+                        tweetDate = info[3].split(" ")[0].strip('"')
+                        ID = info[0].strip('"')
                         print(ID+","+tweetDate+","+text,file=output)
                         dataArray = [ID,tweetDate,text]
                         dumpArray.append(dataArray)
@@ -78,7 +94,7 @@ def search(dumpCSV):
     return dumpArray
 
 def destroy(tweetid):
-    api = makeAPI('.apikey')
+    api = makeAPI()
     api.destroy_status(tweetid)
 
 def purge(dumpFile):
@@ -93,15 +109,17 @@ def purge(dumpFile):
                 print("Tweet:",tweet[2])
                 delete = input("Delete this tweet? (y/n): ")
                 if delete == 'y':
-                    # TODO ignore deleted
                     print(tweet[0],file=ignoreStore)
                     destroy(tweet[0])
                     count+=0
+                elif delete == 'n': # Add to ignore file only
+                    print(tweet[0],file=ignoreStore)
+                    print("Did not delete above tweet.")
                 else:
                     print("Did not delete above tweet.")
         else:
             print("API limit reached. Try again in 15 minutes.")
             break
 
-checkEnv()
+# checkEnv()
 purge('tweets.csv')

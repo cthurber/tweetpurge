@@ -1,6 +1,6 @@
 import os,sys
+
 if os.path.isfile('.apikey') == False:
-	print("\n === Tweet Purge Setup === ")
 	consumerKey = input("Consumer Key: ")
 	consumerSecret = input("Consumer Secret: ")
 	accessToken = input("Access Token: ")
