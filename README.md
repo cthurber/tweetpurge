@@ -1,4 +1,10 @@
 # TweetPurge
+
+#### Coming soon: TweetDelete Web App
+- [ ] Log in and view your timeline in reverse chron. order
+- [ ] Check off all of those tweets from a younger you
+- [ ] Hit the big red DELETE button, and enjoy a clean feed!
+
 ### Getting Started
 #### What you need:
 - A Twitter account
